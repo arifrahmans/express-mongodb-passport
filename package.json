@@ -1,0 +1,11 @@
+{
+  "name": "express-mongodb-passport",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/arifrahmans/express-mongodb-passport.git",
+  "author": "arifrahmans <arif.ilkom@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
