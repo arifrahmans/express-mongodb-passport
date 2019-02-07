@@ -2,11 +2,13 @@ import express from'express';
 import constants from '../config/constants';
 import '../config/database';
 import middlewaresConfig from '../config/middlewares'
+import apiRoutes from '../modules'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 middlewaresConfig(app);
+apiRoutes(app);
 
 app.get('/', (req,res) => {
     res.send('Hello World');
