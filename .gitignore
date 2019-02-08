@@ -2,3 +2,4 @@
 dist/
 package-lock.json
 dist/index.bundle.js
+yarn-error.log

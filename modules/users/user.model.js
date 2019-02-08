@@ -5,6 +5,7 @@ import { passwordReg } from './user.validations';
 import jwt from 'jsonwebtoken';
 import constants from '../../config/constants';
 import uniqueValidator from 'mongoose-unique-validator';
+import Post from '../posts/post.model';
 
 const UserSchema = new Schema({
     email:{
@@ -46,7 +47,16 @@ const UserSchema = new Schema({
           message: '{VALUE} is not a valid password!',
         },
       },
-})
+      favorites: {
+        posts: [{
+          type: Schema.Types.ObjectId,
+          ref: 'Post'
+        }]
+      }
+    },
+    { timestamps: true },
+  );
+  
 
 UserSchema.plugin(uniqueValidator, {
   message: '{VALUE} already taken!',
@@ -88,7 +98,29 @@ UserSchema.methods = {
           userName: this.userName,
         };
       },
-};
+      _favorites: {
+        async posts(postId) {
+          if (this.favorites.posts.indexOf(postId) >= 0) {
+            this.favorites.posts.remove(postId);
+            await Post.decFavoriteCount(postId);
+          } else {
+            console.log(`post id : ${postId}`)
+            this.favorites.posts.push(postId);
+            await Post.incFavoriteCount(postId);
+          }
+    
+          return this.save();
+        },
+    
+        isPostIsFavorite(postId) {
+          if (this.favorites.posts.indexOf(postId) >= 0) {
+            return true;
+          }
+    
+          return false;
+        }
+      }
+    };
 
 
 export default mongoose.model('User', UserSchema);

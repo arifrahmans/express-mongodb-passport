@@ -75,6 +75,14 @@ PostSchema.plugin(uniqueValidator, {
       .skip(skip)
       .limit(limit)
       .populate('user');
+    },
+
+    incFavoriteCount(postId) {
+      return this.findByIdAndUpdate(postId, { $inc: { favoriteCount: 1 } });
+    },
+  
+    decFavoriteCount(postId) {
+      return this.findByIdAndUpdate(postId, { $inc: { favoriteCount: -1 } });
     }
   }
 
