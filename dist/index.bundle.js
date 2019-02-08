@@ -492,11 +492,12 @@ exports.default = app => {
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.createPost = createPost;
 exports.getPostById = getPostById;
 exports.getPostsList = getPostsList;
+exports.updatePost = updatePost;
 
 var _post = __webpack_require__(15);
 
@@ -509,34 +510,54 @@ var _httpStatus2 = _interopRequireDefault(_httpStatus);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 async function createPost(req, res) {
-    try {
-        const post = await _post2.default.createPost(req.body, req.user._id);
-        console.log("POST nya : ", post);
-        return res.status(_httpStatus2.default.CREATED).json(post);
-    } catch (e) {
-        return res.status(_httpStatus2.default.BAD_REQUEST).json(e);
-    }
+  try {
+    const post = await _post2.default.createPost(req.body, req.user._id);
+    console.log("POST nya : ", post);
+    return res.status(_httpStatus2.default.CREATED).json(post);
+  } catch (e) {
+    return res.status(_httpStatus2.default.BAD_REQUEST).json(e);
+  }
 }
 
 async function getPostById(req, res) {
-    try {
-        const post = await _post2.default.findById(req.params.id).populate('user');
-        return res.status(_httpStatus2.default.OK).json(post);
-    } catch (e) {
-        return res.status(_httpStatus2.default.BAD_REQUEST).json(e);
-    }
+  try {
+    const post = await _post2.default.findById(req.params.id).populate('user');
+    return res.status(_httpStatus2.default.OK).json(post);
+  } catch (e) {
+    return res.status(_httpStatus2.default.BAD_REQUEST).json(e);
+  }
 }
 
 async function getPostsList(req, res) {
-    const limit = parseInt(req.query.limit, 0);
-    const skip = parseInt(req.query.skip, 0);
+  const limit = parseInt(req.query.limit, 0);
+  const skip = parseInt(req.query.skip, 0);
 
-    try {
-        const posts = await _post2.default.list({ limit, skip });
-        return res.status(_httpStatus2.default.OK).json(posts);
-    } catch (e) {
-        return res.status(_httpStatus2.default.BAD_REQUEST).json(e);
+  try {
+    const posts = await _post2.default.list({
+      limit,
+      skip
+    });
+    return res.status(_httpStatus2.default.OK).json(posts);
+  } catch (e) {
+    return res.status(_httpStatus2.default.BAD_REQUEST).json(e);
+  }
+}
+
+async function updatePost(req, res) {
+  try {
+    const post = await _post2.default.findById(req.params.id);
+    if (!post.user.equals(req.user._id)) {
+      return res.sendStatus(_httpStatus2.default.UNAUTHORIZED);
     }
+
+    Object.keys(req.body).forEach(key => {
+      post[key] = req.body[key];
+    });
+
+    return res.status(_httpStatus2.default.OK).json((await post.save()));
+  } catch (e) {
+    return res.status(_httpStatus2.default.BAD_REQUEST).json(e);
+  }
 }
 
 /***/ }),
@@ -671,6 +692,7 @@ const routes = new _express.Router();
 routes.post('/', _auth.authJwt, (0, _expressValidation2.default)(_post3.default.createPost), postController.createPost);
 routes.get('/:id', postController.getPostById);
 routes.get('/', postController.getPostsList);
+routes.patch('/:id', _auth.authJwt, (0, _expressValidation2.default)(_post3.default.updatePost), postController.updatePost);
 
 exports.default = routes;
 
@@ -696,6 +718,12 @@ exports.default = {
     body: {
       title: _joi2.default.string().min(3).required(),
       text: _joi2.default.string().min(10).required()
+    }
+  },
+  updatePost: {
+    body: {
+      title: _joi2.default.string().min(3),
+      text: _joi2.default.string().min(10)
     }
   }
 };
