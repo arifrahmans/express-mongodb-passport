@@ -6,6 +6,7 @@
   "author": "arifrahmans <arif.ilkom@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "start": "node server/server.js",
     "clean": "rimraf dist",
     "dev:build": "webpack -w",
     "dev": "cross-env NODE_ENV=development nodemon dist/index.bundle.js"
