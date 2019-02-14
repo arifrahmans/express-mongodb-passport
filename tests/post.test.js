@@ -101,7 +101,7 @@ describe('GET Post /post', () => {
 
 
   describe('GET /post/:id', () => {
-    it('should return todo doc', (done) => {
+    it('should return post', (done) => {
       request(app)
         .get(`/api/v1/posts/${postId}`)
         .set('Authorization', user.token)
@@ -115,9 +115,66 @@ describe('GET Post /post', () => {
         .end(done);
     });
 
-    it('should not return post, if get by other user', (done) => {
+    it('should return 404 if post not found', (done) => {
         request(app)
           .get(`/api/v1/posts/${new ObjectID()}`)
+          .set('Authorization', user.token)
+          .expect(404)
+          .end(done);
+      });
+})
+
+describe('PATCH Post /post', () => {
+    it('should update a post', (done) => {
+  
+      request(app)
+        .patch(`/api/v1/posts/${postId}`)
+        .set('Authorization', user.token)
+        .send({
+          title: 'this is title',
+          text: 'this is text'
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.title).toBe('this is title');
+          expect(res.body.text).toBe('this is text');
+          expect(res.body.slug).toBe(slug('this is title'));
+          expect(res.body.user).toBe(user._id);
+        })
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+        });
+      done()
+    });
+  
+    it('should not update new post with invalid data', (done) => {
+      request(app)
+        .patch(`/api/v1/posts/${postId}`)
+        .set('Authorization', user.token)
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+        });
+      done()
+    });
+  })
+
+  describe('DELETE /post/:id', () => {
+    it('should return HTTP OK', (done) => {
+      request(app)
+        .delete(`/api/v1/posts/${postId}`)
+        .set('Authorization', user.token)
+        .expect(200)
+        .end(done);
+    });
+
+    it('should return 404 if post not found', (done) => {
+        request(app)
+          .delete(`/api/v1/posts/${new ObjectID()}`)
           .set('Authorization', user.token)
           .expect(404)
           .end(done);

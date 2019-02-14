@@ -73,11 +73,16 @@ export async function updatePost(req, res) {
       return res.sendStatus(HTTPStatus.UNAUTHORIZED);
     }
 
-    Object.keys(req.body).forEach(key => {
+    if (req.body){
+      Object.keys(req.body).forEach(key => {
         post[key] = req.body[key];
     });
 
     return res.status(HTTPStatus.OK).json(await post.save());
+    } else {
+      return res.status(HTTPStatus.BAD_REQUEST).send();
+    }
+    
 
   } catch (e) {
     return res.status(HTTPStatus.BAD_REQUEST).json(e);
@@ -87,13 +92,18 @@ export async function updatePost(req, res) {
 export async function deletePost(req,res){
     try {
         const post = await Post.findById(req.params.id).populate('user');
-        if (!post.user.equals(req.user._id)) {
+        if (post){
+          if (!post.user.equals(req.user._id)) {
             return res.sendStatus(HTTPStatus.UNAUTHORIZED);
           }
 
           await post.remove();
 
           return res.sendStatus(HTTPStatus.OK);
+        } else {
+          return res.sendStatus(HTTPStatus.NOT_FOUND);
+        }
+        
       } catch (e) {
         return res.status(HTTPStatus.BAD_REQUEST).json(e);
       }
