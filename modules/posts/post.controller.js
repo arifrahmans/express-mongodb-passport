@@ -5,7 +5,7 @@ import User from '../users/user.model';
 export async function createPost(req, res) {
   try {
     const post = await Post.createPost(req.body, req.user._id);
-    console.log("POST nya : ", post);
+    
     return res.status(HTTPStatus.CREATED).json(post);
   } catch (e) {
     return res.status(HTTPStatus.BAD_REQUEST).json(e);
@@ -22,11 +22,18 @@ export async function getPostById(req, res) {
       const favorite = promise[0]._favorites.isPostIsFavorite(req.params.id);
       const post = promise[1];
   
-      return res.status(HTTPStatus.OK).json({
-        ...post.toJSON(),
-        favorite
-      });
+      if(post){
+        return res.status(HTTPStatus.OK).json({
+        
+          ...post.toJSON(),
+          favorite
+        });
+      } else {
+        return res.status(HTTPStatus.NOT_FOUND).send();
+      }
+      
   } catch (e) {
+    console.log(e);
     return res.status(HTTPStatus.BAD_REQUEST).json(e);
   }
 }

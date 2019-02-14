@@ -28,3 +28,5 @@ app.listen(PORT, err => {
         
     }
 })
+
+export default app;

@@ -4,7 +4,8 @@ const devConfig = {
 };
 
 const testConfig = {
-    MONGO_URL: 'mongodb://localhost:27017/makenodejsapi-test'
+    MONGO_URL: 'mongodb://localhost:27017/makenodejsapi-test',
+    JWT_SECRET: 'thisisasecret'
 };
 
 const prodConfig = {
