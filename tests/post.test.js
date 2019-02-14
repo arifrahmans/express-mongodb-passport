@@ -81,7 +81,7 @@ describe('POST new Post /post', () => {
   });
 })
 
-describe('GET Post /post', () => {
+describe('GET All Post /post', () => {
     it('should get all posts', (done) => {
       request(app)
         .get('/api/v1/posts')
@@ -100,7 +100,7 @@ describe('GET Post /post', () => {
   })
 
 
-  describe('GET /post/:id', () => {
+  describe('GET Post By Id /post/:id', () => {
     it('should return post', (done) => {
       request(app)
         .get(`/api/v1/posts/${postId}`)
